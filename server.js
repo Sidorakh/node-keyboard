@@ -1,24 +1,34 @@
-var blessed = require('blessed');
-var keyboards = require('./keyboards.json');
-var keyboard = keyboards.dvorak;
-var pos={x:1,y:1};
+// PACKAGES
+const midi = require('midi');
+const blessed = require('blessed');
+const robot = require('robotjs');
+
+// SIDS SHIT
+const keyboards = require('./keyboards.json');
+const keyboard = keyboards.dvorak;
+
+
+
+var pos = {
+    x: 1,
+    y: 1
+};
 var screen = blessed.screen({
-    smartCSR:true
+    smartCSR: true
 });
 screen.title = "Blessed!";
 var box = [];
-for (var x=0;x<3;x++) {
+for (let x = 0; x < 3; x++) {
     box[x] = [];
-    for (var y=0;y<3;y++) {
+    for (let y = 0; y < 3; y++) {
         box[x][y] = blessed.box({
-            left: 4+(x)*8,
-            top: 4+(Math.floor(y))*8,
-            content:`${y*3+x}`
+            left: 4 + (x) * 8,
+            top: 4 + (Math.floor(y)) * 8,
+            content: `${y*3+x}`
         });
         screen.append(box[x][y]);
     }
 }
-var midi = require('midi');
 
 
 var input = new midi.input();
@@ -43,21 +53,22 @@ input.on('message', function (dt, msg) {
     }
     switch (Number.parseInt(msg[1])) {
         case 36:
-            pos.x-=1;
+            robot.typeString('f');
+            pos.x -= 1;
             if (pos.x < 0) pos.x = 0;
-        break;
+            break;
         case 37:
-            pos.y -=1;
+            pos.y -= 1;
             if (pos.y < 0) pos.y = 0;
-        break;
+            break;
         case 38:
-            pos.x+=1;
-            if (pos.x > keyboard[pos.y].length) pos.x = keyboard[pos.y].length-1;
-        break;
+            pos.x += 1;
+            if (pos.x > keyboard[pos.y].length) pos.x = keyboard[pos.y].length - 1;
+            break;
         case 39:
-            pos.y +=1;
-            if (pos.y >= keyboard.length) pos.y = keyboard.length-1;
-        break;
+            pos.y += 1;
+            if (pos.y >= keyboard.length) pos.y = keyboard.length - 1;
+            break;
 
     }
 });
@@ -65,10 +76,10 @@ input.on('message', function (dt, msg) {
 input.openPort(0);
 
 setInterval(() => {
-    for (var x=0;x<3;x++) {
-        for (var y=0;y<3;y++) {
-            var nx = pos.x-1+x;
-            var ny = pos.y-1+y;
+    for (var x = 0; x < 3; x++) {
+        for (var y = 0; y < 3; y++) {
+            var nx = pos.x - 1 + x;
+            var ny = pos.y - 1 + y;
             if (nx < 0 || nx >= keyboard[pos.y].length) {
                 box[x][y].content = " ";
                 continue;
@@ -80,8 +91,8 @@ setInterval(() => {
             box[x][y].content = keyboard[ny][nx];
         }
     }
-    
-    
+
+
     screen.render();
 
-},16);
+}, 16);
