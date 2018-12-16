@@ -1,4 +1,5 @@
 var blessed = require('blessed');
+var robot = require('robotjs');
 var keyboards = require('./keyboards.json');
 var keyboard = keyboards.dvorak;
 var pos={x:1,y:1};
@@ -58,6 +59,9 @@ input.on('message', function (dt, msg) {
             pos.y +=1;
             if (pos.y >= keyboard.length) pos.y = keyboard.length-1;
         break;
+        case 40:
+            robot.typeString(keyboard[pos.x][pos.y]);
+        break;  
 
     }
 });
