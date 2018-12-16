@@ -14,7 +14,7 @@ var pos = {
     y: 1
 };
 var screen = blessed.screen({
-    smartCSR: true
+   smartCSR: true
 });
 screen.title = "Blessed!";
 var box = [];
@@ -22,9 +22,9 @@ for (let x = 0; x < 3; x++) {
     box[x] = [];
     for (let y = 0; y < 3; y++) {
         box[x][y] = blessed.box({
-            left: 4 + (x) * 8,
-            top: 4 + (Math.floor(y)) * 8,
-            content: `${y*3+x}`
+           left: 4 + (x) * 8,
+           top: 4 + (Math.floor(y)) * 8,
+           content: `${y*3+x}`
         });
         screen.append(box[x][y]);
     }
@@ -48,27 +48,31 @@ input.on('message', function (dt, msg) {
     //41
     //144 = down
     //128 = up
-    if (Number.parseInt(msg[0]) == 128) {
+
+    if (Number.parseInt(msg[0]) == 129) {
         return;
     }
+    
     switch (Number.parseInt(msg[1])) {
-        case 36:
-            robot.typeString('f');
+        case 48:
             pos.x -= 1;
             if (pos.x < 0) pos.x = 0;
-            break;
-        case 37:
+        break;
+        case 50:
             pos.y -= 1;
             if (pos.y < 0) pos.y = 0;
-            break;
-        case 38:
+        break;
+        case 52:
             pos.x += 1;
-            if (pos.x > keyboard[pos.y].length) pos.x = keyboard[pos.y].length - 1;
-            break;
-        case 39:
+            if (pos.x >= keyboard[pos.y].length) pos.x = keyboard[pos.y].length - 1;
+        break;
+        case 53:
             pos.y += 1;
             if (pos.y >= keyboard.length) pos.y = keyboard.length - 1;
-            break;
+        break;
+        case 55:
+            robot.typeString(keyboard[pos.y][pos.x]);
+        break;  
 
     }
 });
@@ -89,10 +93,10 @@ setInterval(() => {
                 continue;
             }
             box[x][y].content = keyboard[ny][nx];
+
         }
     }
 
-
     screen.render();
 
-}, 16);
+}, 100);    
