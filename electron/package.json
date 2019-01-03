@@ -4,8 +4,10 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "start": "electron ."
   },
+  "nodeGypRebuild": "true",
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
     "Electron",
@@ -17,10 +19,18 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^3.0.7"
+    "electron": "^3.0.7",
+    "electron-builder": "^20.38.4",
+    "electron-rebuild": "^1.8.2"
   },
   "dependencies": {
     "midi": "^0.9.5",
     "robotjs": "^0.5.1"
+  },
+  "build": {
+    "asarUnpack": [
+      "**/app/node_modules/midi/*",
+      "**/app/node_modules/robotjs/*"
+    ]
   }
 }

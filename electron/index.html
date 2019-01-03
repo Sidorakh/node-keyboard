@@ -4,26 +4,39 @@
     <meta charset="UTF-8">
     <title>Keyboard</title>
     <style>
-    body {
-      background-color:#eee;
-    }
-    div#content {
-      background-color:#eee;
-      -webkit-user-select: none;
-      width:100%;
-    }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+        #keyboard_canvas {
+            background-color: #ccc;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display:none;
+        }
+        button {
+          width:50%;
+          display:block;
+        }
     </style>
-    <script>
-      // You can also require other files to run in this process
-      require('./backend.js')
-    </script>
   </head>
   <body>
-    <div id="content"> 
-      <canvas id="canvas">
-        How does this not work!
-      </canvas>
+    <div id="instructions">
+      <p>Select a keyboard to begin</p>
     </div>
+    <canvas id="keyboard_canvas">
+      Apparently, Electron doesn't support canvases. You're outta luck, kid. Sorry :)
+    </canvas>
   </body>
-  
+  <script>
+    require('./backend.js');
+  </script>
 </html>

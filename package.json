@@ -1,9 +1,10 @@
 {
     "main": "server.js",
     "dependencies": {
+        "blessed": "0.1.81",
         "midi": "0.9.5",
-        "robotjs": "0.5.1",
-        "blessed": "0.1.81"
+        "readline-sync": "^1.4.9",
+        "robotjs": "0.5.1"
     },
     "description": "lol whats a description",
     "repository": {
