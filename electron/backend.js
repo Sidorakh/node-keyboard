@@ -1,16 +1,19 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-var midi = require('midi');
 var fs = require('fs');
 var robot = require('robotjs');
-var input = new midi.input();
+const { ipcRenderer } = require('electron')
 
-var num_ports = input.getPortCount();
+var num_ports = ipcRenderer.sendSync('synchronous-message', ['get_ports']);
 
 var bound_map = {};
 var kb_state = "select_input";
 var current_keyboard = "qwerty";
+
+ipcRenderer.on('asynchronous-reply', (event, arg) => {
+    console.log(arg) // prints "pong"
+})
 
 var keyboards = JSON.parse(fs.readFileSync('keyboards.json'));
 var back_color = keyboards.options.back_color;
@@ -22,25 +25,24 @@ var key_state = [];
 
 var keys = ["up", "down", "left", "right", "enter", "backspace"];
 
-var num = input.getPortCount();
 var div = document.getElementById("instructions");
 
 function openPort(port) {
     console.log(`Opening port ${port}`);
     div.innerHTML = "";
     div.innerText = "Press any key on the MIDI keyboard to calibrate";
-    input.openPort(port);
+    ipcRenderer.sendSync('synchronous-message',['open_port',port]);
     kb_state = "calibrate";
 }
-console.log(num);
-for (var i=0;i<num;i++) {
+console.log(num_ports);
+for (var i=0;i<num_ports;i++) {
     
     var btn = document.createElement("button");
     let j=i;
     btn.addEventListener('click',()=>{
         openPort(j);
     });
-    btn.innerText = input.getPortName(j);
+    btn.innerText = ipcRenderer.sendSync('synchronous-message', ['get_port_name',j]);
     div.appendChild(btn);
 }
 
@@ -71,7 +73,7 @@ window.requestAnimationFrame(function animate(){
     window.requestAnimationFrame(animate);
 });
 
-input.on('message', (dt,msg)=> {
+ipcRenderer.on('midi',(event, msg) => {
     if(kb_state == "calibrate") {
         if (key_state.length < 2) {
             key_state.push(msg[0]);
@@ -112,15 +114,19 @@ input.on('message', (dt,msg)=> {
                 switch (key) {
                     case "left":
                         pos[0]-=1;
+                        pos[0] = (pos[0] + (keyboards[current_keyboard][0].length)) % (keyboards[current_keyboard][0].length);
                         break;
                     case "right":
                         pos[0]+=1;
+                        pos[0] = (pos[0] + (keyboards[current_keyboard][0].length)) % (keyboards[current_keyboard][0].length);
                     break;
                     case "up":
                         pos[1]-=1;
+                        pos[1] = (pos[1] + (keyboards[current_keyboard].length+1)) % (keyboards[current_keyboard].length+1);
                     break;
                     case "down":
                         pos[1]+=1;
+                        pos[1] = (pos[1] + (keyboards[current_keyboard].length+1)) % (keyboards[current_keyboard].length+1);
                     break;
                     case "enter":
                         var kb = keyboards[current_keyboard];
@@ -175,10 +181,7 @@ input.on('message', (dt,msg)=> {
             }
         }
     }
-    
-
 });
-
 
 function draw_keyboard(ctx) {
     var kb = keyboards[current_keyboard];

@@ -1,5 +1,30 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow} = require('electron');
+var midi = require('midi');
+var input = new midi.input();
+const { ipcMain } = require('electron');
+
+ipcMain.on('synchronous-message', (event, arg) => {
+    var func = arg.shift()
+    console.log(func);
+    switch (func) {
+        case "get_ports":
+            event.returnValue = input.getPortCount();
+        break;
+        case "get_port_name":
+            event.returnValue = input.getPortName(arg[0]);
+        break;
+        case "open_port":
+            input.openPort(arg[0]);
+            event.returnValue = true;
+        break;
+    }
+})
+
+
+input.on('message', (dt,msg)=> {
+    mainWindow.send('midi',msg);
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -14,7 +39,7 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
